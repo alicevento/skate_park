@@ -69,6 +69,7 @@ const loginSkater = async (email, password) => {
     // Si se encuentra un skater con el correo proporcionado
     if (result.rows.length === 1) {
       const skater = result.rows[0];
+      console.log("Skater encontrado: ", skater);
       // Verificar si la contraseña coincide
       if (skater.password === password) {
         // Si la contraseña coincide, generar y devolver el token
