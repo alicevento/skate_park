@@ -1,0 +1,69 @@
+{{!-- admin.handlebars --}}
+<div class="py-4">
+      <h2>Administración</h2>
+      <hr class="w-50" />
+
+      <table class="table w-50 m-auto">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Foto</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Años de experiencia</th>
+            <th scope="col">Especialidad</th>
+            <th scope="col">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+            {{#if skaters}}
+            {{#each skaters}}
+            <tr>
+              <th scope="row">{{id}}</th>
+              <td><div style="background-image: url(/uploads/{{foto}});"></div></td>
+              <td>{{nombre}}</td>
+              <td>{{anos_experiencia}}</td>
+              <td>{{especialidad}}</td>
+              <td>
+                {{#if estado}}
+          <input type="checkbox" checked onclick="changeStatus({{id}}, this)">
+          {{else}}
+          <input type="checkbox" onclick="changeStatus({{id}}, this)">
+          {{/if}}
+              </td>
+            </tr>
+            {{/each}}
+            {{else}}
+            <tr>
+              <th scope="row">No hay participantes registrados</th>
+            </tr>
+            {{/if}}
+          
+        </tbody>
+      </table>
+    </div>
+   </body>
+
+</html>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  const changeStatus = async (id, e) => {
+
+    const estado = e.checked
+    console.log("Valor de estado recibido en ChangeStatus: ", estado)
+    try {
+      await axios.put(`/skater/status/${id}`, {
+        id,
+        estado
+      })
+      alert(estado ? "Skater aprobado!" : "Skater En revisión")
+      window.location = `/`
+    } catch ({ response }) {
+      const { data } = response
+      const { error } = data
+      alert(error)
+    }
+
+  }
+
+</script>
