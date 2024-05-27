@@ -25,8 +25,9 @@ const getSkaters = async () => {
         const result = await pool.query(consulta);
         return result.rows;
     } catch (error) {
+      console.log("Error en consultar skaters: " + error.code);
         throw error;
-        console.log("Error: " + error.code);
+        
     }
 };
 // Función para registrar un skater
@@ -39,10 +40,10 @@ const registrarSkater = async (email, nombre, password, anos_experiencia, especi
         const result = await pool.query(consulta);
         return result.rows[0];
     } catch (error) {
-        console.log("Error: " + error);
+        console.log("Error al registrar Skater: " + error);
     }
 }
-
+//Función para actualizar estado por el lado del administrador
 const estadoSkater = async (id, estado) => {
     try {
         const consulta = {
@@ -56,37 +57,48 @@ const estadoSkater = async (id, estado) => {
     }
 }
 
-const loginSkater = async (email, password) => {
+//Función para actualizar skater
+const updateSkater = async (email, nombre, password, anos_experiencia, especialidad) => {
+  const consulta = {
+      text:'UPDATE skaters SET nombre = $2, password = $3, anos_experiencia = $4, especialidad = $5 WHERE email = $1',
+      values:[email, nombre, password, anos_experiencia, especialidad]
+  }
   try {
-    // Consulta a la base de datos para verificar las credenciales del skater
-    const consulta = {
-      text: 'SELECT * FROM skaters WHERE email = $1',
-      values: [email]
-    };
-
-    const result = await pool.query(consulta);
-
-    // Si se encuentra un skater con el correo proporcionado
-    if (result.rows.length === 1) {
-      const skater = result.rows[0];
-      console.log("Skater encontrado: ", skater);
-      // Verificar si la contraseña coincide
-      if (skater.password === password) {
-        // Si la contraseña coincide, generar y devolver el token
-        const token = jwt.sign({ email }, secretKey);
-        return token;
-      } else {
-        // Si la contraseña no coincide, lanzar un error
-        throw new Error('Credenciales incorrectas');
-      }
-    } else {
-      throw new Error('Credenciales incorrectas');
-    }
+      const result = await pool.query(consulta);
+      return result.rowCount;
   } catch (error) {
-    console.error("Error en el login:", error);
-    throw error; 
+      console.log("Error en consultas updateSkater: " + error);
   }
 };
 
 
-module.exports = { getSkaters, registrarSkater, estadoSkater, loginSkater };
+//Funcion para eliminar skater
+const deleteSkater = async (id) => {
+  try {
+    const consulta = {
+      text: "DELETE FROM skaters WHERE id = $1",
+      values: [id]
+    };
+    const result = await pool.query(consulta);
+    return result.rowCount;
+  } catch (error) {
+    console.log("Error: " + error);
+  }
+};
+
+//Función para buscar skater por mail y password
+const loginSkater = async (email, password) => {
+  const consulta = {
+      text:'SELECT id, email, nombre, password, anos_experiencia, especialidad, foto, estado FROM skaters WHERE email=$1 AND password=$2',
+      values:[email, password]
+  }
+  try {
+      const result = await pool.query(consulta);
+      return result.rows[0];
+  } catch (error) {
+      console.log("Error en consultas consultarSkater: " + error);
+  }
+};
+
+
+module.exports = { getSkaters, registrarSkater, estadoSkater, loginSkater, updateSkater, deleteSkater, loginSkater };

@@ -23,6 +23,8 @@ const {
   registrarSkater,
   estadoSkater,
   loginSkater,
+  updateSkater,
+  deleteSkater,
 } = require("./consultas/consultas");
 
 // creamos carpeta publica para subir archivos
@@ -62,26 +64,24 @@ app.get("/login", (req, res) => {
   res.render("Login");
 });
 
-app.post("/login", async (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
-  console.log("Email recibido:", email); 
-  console.log("Contraseña recibida:", password); 
-
+  console.log("Valor de req.body: ", req.body);
+  const skater = await loginSkater(email, password);
+  console.log("Valor de skaters: ", skater);
   try {
-    const token = await loginSkater(email, password); 
-    console.log("Token generado:", token);
-    if (token) {
+    if (skater) {
+      const token = jwt.sign(skater, secretKey, { expiresIn: '2m' });
       res.redirect(`/datos?token=${token}`);
+      console.log("token: ", token);
     } else {
-        res.status(401).send("Credenciales incorrectas");
+      res.status(401).send('No se ha podido ingresar');
     }
   } catch (error) {
-    console.error("Error en el login:", error); 
     res.status(500).send({
       error: `Algo salió mal... ${error}`,
-      code: 500,
-    });
+      code: 500
+    })
   }
 });
 
@@ -89,24 +89,33 @@ app.get("/registro", (req, res) => {
   res.render("Registro");
 });
 
-app.get("/perfil", (req, res) => {
-  const token = req.query.token;
-  if (!token) {
-    return res.status(401).send("Acceso no autorizado");
-  }
+app.get('/datos', (req, res) => {
+  let { token } = req.query;
+  jwt.verify(token, secretKey, (err, skater) => {
+    const data = skater;
+    if (err) {
+      res.status(401).json({
+        error: "401 Unauthorized",
+        message: err.message,
+      });
+    } else {
+      res.render('Datos', data);
+    }
+  });
 
-  try {
-    const decoded = jwt.verify(token, secretKey);
-    res.render("Perfil", { email: decoded.email });
-  } catch (error) {
-    return res.status(401).send("Token inválido o expirado");
-  }
 });
 
 
-app.get("/admin", async (req, res) => {
-  const result = await getSkaters();
-  res.render("Admin", { skaters: result });
+app.get('/admin', async (req, res) => {
+  try {
+    const result = await getSkaters();
+    res.render('Admin', { skaters: result });
+  } catch (error) {
+    res.status(500).send({
+      error: `Algo salió mal... ${error}`,
+      code: 500
+    })
+  }
 });
 
 // API REST para registro de skaters
@@ -148,6 +157,31 @@ app.post("/registro", async (req, res) => {
       code: 500,
     });
   }
+});
+// Ruta para actualizar datos de un skater
+app.post('/actualizar', async (req, res) => {
+  console.log("Valor de req.body: ", req.body);
+  let { email, nombre, password, anos_experiencia, especialidad } = req.body;
+  try {
+    await updateSkater(email, nombre, password, anos_experiencia, especialidad);
+    res.send('<script>alert("Datos actualizados con éxito."); window.location.href = "/"; </script>');
+  } catch (error) {
+    res.status(500).send(`Error en actualización de datos. ${error}`)
+  }
+});
+
+// Ruta eliminar un skater
+app.delete('/skater', async (req, res) => {
+  try {
+    const { id } = req.query;
+    await deleteSkater(id);
+    res.status(200).send(`<script>alert("La cuenta con ${id} ha sido eliminada con éxito."); window.location.href = "/"; </script>`);
+  } catch (e) {
+    return res.status(500).send({
+      error: `Algo salió mal... ${e.message}`,
+      code: 500
+    })
+  };
 });
 
 app.put("/skater/status/:id", async (req, res) => {
