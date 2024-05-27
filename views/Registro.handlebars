@@ -1,39 +1,64 @@
 <div class="py-4">
-      <h2>Registro</h2>
-      <hr class="w-50" />
+  <h2>Registro</h2>
+  <hr class="w-50" />
 
-      <form action="/registro" method="post" enctype="multipart/form-data">
-        <div class="form-group row w-50 m-auto">
-          <div class="form-group col-12 col-sm-6">
-            <label>Email</label>
-            <input name="email" class="form-control m-auto" />
-          </div>
-          <div class="form-group col-12 col-sm-6">
-            <label>Nombre</label>
-            <input name="nombre" class="form-control m-auto" />
-          </div>
-          <div class="form-group col-12 col-sm-6">
-            <label>Password</label>
-            <input type="password"  name="password" class="form-control m-auto" />
-          </div>
-          <div class="form-group col-12 col-sm-6">
-            <label>Repita la password</label>
-            <input type="password" name="password2" class="form-control m-auto" />
-          </div>
-          <div class="form-group col-12 col-sm-6">
-            <label>Años de experiencia</label>
-            <input name="anos_experiencia" class="form-control m-auto" />
-          </div>
-          <div class="form-group col-12 col-sm-6">
-            <label>Especialidad</label>
-            <input name="especialidad" class="form-control m-auto" />
-          </div>
-          <div class="form-group col-12 col-sm-12">
-            <label>Foto de perfil</label>
-            <input name="foto" type="file" />
-          </div>
-        </div>
-        <button class="btn btn-info mb-3">Registrarme</button>
-        <p><a href="/login"> Iniciar sesión</a></p>
-      </form>
+  <form id="registroForm" action="/registro" method="post" enctype="multipart/form-data">
+    <div class="form-group row w-50 m-auto">
+      <div class="form-group col-12 col-sm-6">
+        <label>Email</label>
+        <input name="email" class="form-control m-auto" />
+      </div>
+      <div class="form-group col-12 col-sm-6">
+        <label>Nombre</label>
+        <input name="nombre" class="form-control m-auto" />
+      </div>
+      <div class="form-group col-12 col-sm-6">
+        <label>Password</label>
+        <input type="password"  name="password" class="form-control m-auto" />
+      </div>
+      <div class="form-group col-12 col-sm-6">
+        <label>Repita la password</label>
+        <input type="password" name="password2" class="form-control m-auto" />
+      </div>
+      <div class="form-group col-12 col-sm-6">
+        <label>Años de experiencia</label>
+        <input name="anos_experiencia" class="form-control m-auto" />
+      </div>
+      <div class="form-group col-12 col-sm-6">
+        <label>Especialidad</label>
+        <input name="especialidad" class="form-control m-auto" />
+      </div>
+      <div class="form-group col-12 col-sm-12">
+        <label>Foto de perfil</label>
+        <input name="foto" type="file" />
+      </div>
     </div>
+    <button type="submit" class="btn btn-info mb-3">Registrarme</button>
+    <p><a href="/login"> Iniciar sesión</a></p>
+  </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector("#registroForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Evita el envío del formulario
+
+      // Validar que todos los campos estén llenos
+      const inputs = document.querySelectorAll("#registroForm input");
+      let formIsValid = true;
+      inputs.forEach(function(input) {
+        if (input.value.trim() === "") {
+          formIsValid = false;
+        }
+      });
+
+      // Si algún campo está vacío, mostrar mensaje de alerta
+      if (!formIsValid) {
+        alert("Por favor, complete todos los campos antes de enviar el formulario.");
+      } else {
+        // Si todos los campos están llenos, enviar el formulario
+        this.submit();
+      }
+    });
+  });
+</script>
