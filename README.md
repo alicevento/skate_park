@@ -12,8 +12,8 @@ Las tecnologías y herramientas que deberás ocupar son las siguientes:
 
 1.- Crear una API REST con el Framework Express.
 2.- Servir contenido dinámico con express-handlebars.
-3.- Ofrecer la funcionalidad Upload File con express-fileupload (2 Puntos)
-4.- Implementar seguridad y restricción de recursos o contenido con JWT (2 Puntos)
+3.- Ofrecer la funcionalidad Upload File con express-fileupload 
+4.- Implementar seguridad y restricción de recursos o contenido con JWT 
 
 ### **Ejecución del programa**
 1.- Clona este repositorio.
