@@ -171,9 +171,10 @@ app.post('/actualizar', async (req, res) => {
 });
 
 // Ruta eliminar un skater
-app.delete('/skater', async (req, res) => {
+app.post('/skater', async (req, res) => {
   try {
     const { id } = req.query;
+    console.log("Valor de id: ", id);
     await deleteSkater(id);
     res.status(200).send(`<script>alert("La cuenta con ${id} ha sido eliminada con éxito."); window.location.href = "/"; </script>`);
   } catch (e) {

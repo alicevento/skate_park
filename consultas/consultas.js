@@ -75,14 +75,15 @@ const updateSkater = async (email, nombre, password, anos_experiencia, especiali
 //Funcion para eliminar skater
 const deleteSkater = async (id) => {
   try {
+    console.log("ID del skater a eliminar:", id); // Agregar este registro para verificar el ID del skater
     const consulta = {
       text: "DELETE FROM skaters WHERE id = $1",
       values: [id]
     };
     const result = await pool.query(consulta);
-    return result.rowCount;
+    return result.rows[0];
   } catch (error) {
-    console.log("Error: " + error);
+    console.log("Error en consultas de borrar Skater: " + error);
   }
 };
 
