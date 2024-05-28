@@ -69,19 +69,24 @@ app.post('/login', async (req, res) => {
   console.log("Valor de req.body: ", req.body);
   const skater = await loginSkater(email, password);
   console.log("Valor de skaters: ", skater);
-  try {
+  
+  if (email ===  "" || password === "") {
+    res.status(400).send('Debe ingresar un email y una contraseña');
+  } else {
     if (skater) {
-      const token = jwt.sign(skater, secretKey, { expiresIn: '2m' });
-      res.redirect(`/datos?token=${token}`);
-      console.log("token: ", token);
+      if (skater.estado === true) {
+        const token = jwt.sign(skater, secretKey, { expiresIn: '2m' });
+        console.log("token: ", token);
+        res.status(200).send(`<script>alert("Se ha autenticado correctamente."); window.location.href = "/datos?token=${token}"</script>`);
+        // res.redirect(`/Datos?token=${token}`);
+        console.log("token: ", token);
+      }
+      else {
+        res.status(401).send(`<script>alert("Skaters no ha sido autorizado aún."); window.location.href = "/login"; </script>`);
+      }
     } else {
-      res.status(401).send('No se ha podido ingresar');
+      res.status(401).send('<script>alert("No se ha podido ingresar"); window.location.href = "/login"; </script>');
     }
-  } catch (error) {
-    res.status(500).send({
-      error: `Algo salió mal... ${error}`,
-      code: 500
-    })
   }
 });
 
